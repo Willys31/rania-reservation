@@ -112,3 +112,5 @@ temp/
 client/public/__manus__/version.json
 .project-config.json
 .manus-logs
+
+RESERVATION-AGENDA.md
