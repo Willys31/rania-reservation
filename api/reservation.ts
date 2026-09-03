@@ -7,7 +7,7 @@ import {
   SALON_TIME_ZONE,
   formatReadableDate,
   validateBooking,
-} from "../shared/booking";
+} from "../shared/booking.js";
 
 const TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token";
 const CALENDAR_API = "https://www.googleapis.com/calendar/v3/calendars";
