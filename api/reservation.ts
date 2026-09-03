@@ -25,10 +25,44 @@ function base64Url(input: string | Buffer): string {
   return Buffer.from(input).toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
-/* Les clés collées dans un dashboard arrivent avec des \n littéraux, et parfois
-   entourées de guillemets. On normalise les deux cas. */
+/* Une clé PEM survit rarement intacte à un copier-coller dans un dashboard :
+   \n littéraux, guillemets résiduels, retours à la ligne aplatis en espaces…
+   On accepte toutes ces formes, plus le JSON complet du compte de service et
+   une clé encodée en base64, puis on reconstruit un PEM canonique. */
 function normalizePrivateKey(raw: string): string {
-  return raw.replace(/^["']|["']$/g, "").replace(/\n/g, "\n");
+  let value = raw.trim().replace(/^["']|["']$/g, "");
+
+  // Le fichier JSON du compte de service a été collé tel quel.
+  if (value.startsWith("{")) {
+    try {
+      const parsed = JSON.parse(value) as { private_key?: string };
+      if (parsed.private_key) value = parsed.private_key;
+    } catch {
+      /* pas du JSON valide : on tente les autres formes */
+    }
+  }
+
+  // Clé encodée en base64, la parade habituelle aux dashboards qui mangent les sauts de ligne.
+  if (!value.includes("BEGIN")) {
+    const decoded = Buffer.from(value, "base64").toString("utf8");
+    if (decoded.includes("BEGIN")) value = decoded;
+  }
+
+  value = value.replace(/\\r/g, "").replace(/\\n/g, "\n");
+
+  const pem = value.match(/-----BEGIN ([A-Z ]+?)-----([\s\S]*?)-----END [A-Z ]+?-----/);
+  if (!pem) {
+    throw new Error("GOOGLE_PRIVATE_KEY : marqueurs -----BEGIN/END----- introuvables.");
+  }
+
+  /* Le corps est re-découpé en lignes de 64 caractères : c'est ce qui rattrape
+     les clés dont les retours à la ligne ont été perdus ou remplacés par des espaces. */
+  const body = pem[2].replace(/[^A-Za-z0-9+/=]/g, "");
+  const lines = body.match(/.{1,64}/g);
+  if (!lines) {
+    throw new Error("GOOGLE_PRIVATE_KEY : corps de la clé vide.");
+  }
+  return `-----BEGIN ${pem[1]}-----\n${lines.join("\n")}\n-----END ${pem[1]}-----\n`;
 }
 
 let cachedToken: { value: string; expiresAt: number } | null = null;
@@ -111,10 +145,26 @@ export default async function handler(req: MinimalRequest, res: MinimalResponse)
     return;
   }
 
+  let privateKey: string;
+  try {
+    privateKey = normalizePrivateKey(rawPrivateKey);
+  } catch (error) {
+    /* Diagnostic sur la forme de la valeur uniquement : aucun fragment de clé n'est journalisé. */
+    console.error("GOOGLE_PRIVATE_KEY illisible.", {
+      message: error instanceof Error ? error.message : String(error),
+      longueur: rawPrivateKey.length,
+      commencePar: rawPrivateKey.trimStart().slice(0, 11),
+      contientBackslashN: rawPrivateKey.includes("\\n"),
+      contientVraiSautDeLigne: rawPrivateKey.includes("\n"),
+    });
+    res.status(500).json({ error: "La réservation en ligne est momentanément indisponible." });
+    return;
+  }
+
   const { name, phone, service, slot, startsAt, endsAt } = booking;
 
   try {
-    const token = await getAccessToken(clientEmail, normalizePrivateKey(rawPrivateKey));
+    const token = await getAccessToken(clientEmail, privateKey);
 
     if (await slotIsTaken(calendarId, token, startsAt, endsAt)) {
       res.status(409).json({ error: "Ce créneau vient d'être réservé. Merci d'en choisir un autre." });
