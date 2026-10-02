@@ -1,9 +1,10 @@
-/* Atelier Graphite — page éditoriale noir/ivoire, composition asymétrique et interactions précises. */
+/* Octobre Rose — page éditoriale noir/blanc nacré, accents roses, composition asymétrique. */
 import { FormEvent, useMemo, useState } from "react";
 import { ArrowUpRight, CalendarCheck, Clock3, MapPin, Phone, Sparkles } from "lucide-react";
 import { services, timeSlots, validateBooking } from "@shared/booking";
 
-const logo = "/images/rania-logo.png";
+const logo = "/images/rania-logo-octobre-rose.png";
+const logoLight = "/images/rania-logo-octobre-rose-clair.png";
 const heroImage = "/images/rania-hero.jpg";
 const detailImage = "/images/rania-detail.jpg";
 
@@ -111,7 +112,7 @@ export default function Home() {
       </section>
 
       <section className="contact-strip"><div className="contact-text"><p className="eyebrow">Besoin d’un renseignement ?</p><h2>Parlons de votre<br /><em>prochain regard.</em></h2></div><a className="contact-link" href="https://wa.me/2250700888451" target="_blank" rel="noreferrer"><span>WhatsApp</span><strong>07 00 88 84 51</strong><ArrowUpRight size={20} /></a><div className="contact-texture" aria-hidden="true"><span>RANIA</span><i /><i /><i /></div></section>
-      <footer className="footer"><div className="footer-brand"><img src={logo} alt="RANIA" /></div><span>© {new Date().getFullYear()} RANIA — La beauté du regard</span><span>Abidjan, Côte d’Ivoire</span></footer>
+      <footer className="footer"><div className="footer-brand"><img src={logoLight} alt="RANIA" /></div><span>© {new Date().getFullYear()} RANIA — La beauté du regard</span><span>Abidjan, Côte d’Ivoire</span></footer>
     </main>
   );
 }
