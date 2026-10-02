@@ -1,17 +1,18 @@
 /* Données de réservation partagées entre le formulaire client et la fonction serverless. */
 
-export type Service = { name: string; price: string; note: string; image: string };
+/* `gallery` : photos supplémentaires qui défilent en carrousel au survol de la carte. */
+export type Service = { name: string; price: string; note: string; image: string; gallery?: string[] };
 
 export const services: Service[] = [
-  { name: "Classique", price: "15 000", note: "Ligne naturelle", image: "/images/services/classique.jpg" },
-  { name: "Hybride", price: "20 000", note: "Mixte & texturé", image: "/images/services/hybrid.jpg" },
-  { name: "Volume russe", price: "25 000", note: "Intensité élégante", image: "/images/services/volume-russe.jpg" },
-  { name: "Volume russe mega", price: "30 000", note: "Effet signature", image: "/images/services/volume-russe-mega.jpg" },
-  { name: "Wet set", price: "35 000", note: "Brillance graphique", image: "/images/services/wet-set.jpg" },
-  { name: "Wispy", price: "35 000", note: "Effet aérien", image: "/images/services/wispy.jpg" },
-  { name: "Open eye", price: "35 000", note: "Regard ouvert", image: "/images/services/open-eye.jpg" },
-  { name: "Clusters", price: "6 000", note: "Pose express", image: "/images/services/clusters.jpg" },
-  { name: "Dépose + entretien", price: "10 000", note: "Soin & retouche", image: "/images/services/depose-entretien.jpg" },
+  { name: "Classique", price: "15 000", note: "Ligne naturelle", image: "/images/services/classique-1.jpg", gallery: ["/images/services/classique-2.jpg", "/images/services/classique-3.jpg"] },
+  { name: "Hybride", price: "20 000", note: "Mixte & texturé", image: "/images/services/hybride-1.jpg", gallery: ["/images/services/hybride-2.jpg", "/images/services/hybride-3.jpg"] },
+  { name: "Volume russe", price: "25 000", note: "Intensité élégante", image: "/images/services/volume-russe-1.jpg", gallery: ["/images/services/volume-russe-2.jpg", "/images/services/volume-russe-3.jpg"] },
+  { name: "Volume russe mega", price: "30 000", note: "Effet signature", image: "/images/services/volume-russe-mega-1.jpg", gallery: ["/images/services/volume-russe-mega-2.jpg", "/images/services/volume-russe-mega-3.jpg"] },
+  { name: "Wet set", price: "35 000", note: "Brillance graphique", image: "/images/services/wet-set-1.jpg", gallery: ["/images/services/wet-set-2.jpg", "/images/services/wet-set-3.jpg"] },
+  { name: "Wispy", price: "35 000", note: "Effet aérien", image: "/images/services/wispy-1.jpg", gallery: ["/images/services/wispy-2.jpg", "/images/services/wispy-3.jpg"] },
+  { name: "Open eye", price: "35 000", note: "Regard ouvert", image: "/images/services/open-eye-1.jpg", gallery: ["/images/services/open-eye-2.jpg", "/images/services/open-eye-3.jpg"] },
+  { name: "Clusters", price: "6 000", note: "Pose express", image: "/images/services/clusters-1.jpg", gallery: ["/images/services/clusters-2.jpg", "/images/services/clusters-3.jpg"] },
+  { name: "Dépose + entretien", price: "10 000", note: "Soin & retouche", image: "/images/services/depose-entretien-1.jpg", gallery: ["/images/services/depose-entretien-2.jpg", "/images/services/depose-entretien-3.jpg"] },
 ];
 
 export type TimeSlot = { value: string; label: string; start: string; end: string };

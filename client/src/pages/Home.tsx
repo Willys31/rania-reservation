@@ -1,7 +1,7 @@
 /* Octobre Rose — page éditoriale noir/blanc nacré, accents roses, composition asymétrique. */
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { ArrowUpRight, CalendarCheck, Clock3, MapPin, Phone, Sparkles } from "lucide-react";
-import { services, timeSlots, validateBooking } from "@shared/booking";
+import { type Service, services, timeSlots, validateBooking } from "@shared/booking";
 
 const logo = "/images/rania-logo-octobre-rose.png";
 const logoLight = "/images/rania-logo-octobre-rose-clair.png";
@@ -9,6 +9,48 @@ const heroImage = "/images/rania-hero.jpg";
 const detailImage = "/images/rania-detail.jpg";
 
 type BookingConfirmation = { service: string; date: string; slot: string };
+
+const SLIDE_INTERVAL = 2000;
+
+/* Carte du catalogue : si la prestation a une galerie, les photos défilent au survol
+   (en continu sur les écrans tactiles, où l'image est toujours visible). */
+function ServiceCard({ service, index, selected, onSelect }: { service: Service; index: number; selected: boolean; onSelect: () => void }) {
+  const images = useMemo(() => [service.image, ...(service.gallery ?? [])], [service]);
+  const [engaged, setEngaged] = useState(false);
+  const [touchOnly, setTouchOnly] = useState(false);
+  const [started, setStarted] = useState(false);
+  const [slide, setSlide] = useState(0);
+  const playing = images.length > 1 && (engaged || touchOnly);
+
+  useEffect(() => { setTouchOnly(window.matchMedia("(hover: none)").matches); }, []);
+
+  useEffect(() => {
+    if (!playing || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    setStarted(true);
+    const timer = window.setInterval(() => setSlide((current) => current + 1), SLIDE_INTERVAL);
+    return () => window.clearInterval(timer);
+  }, [playing]);
+
+  const current = slide % images.length;
+  const previous = (slide - 1 + images.length) % images.length;
+  /* Les photos de la galerie ne sont chargées qu'au premier survol. */
+  const visibleImages = started ? images : images.slice(0, 1);
+
+  return (
+    <button type="button" className={`service-row ${selected ? "is-selected" : ""}`} onClick={onSelect} onMouseEnter={() => setEngaged(true)} onMouseLeave={() => setEngaged(false)} onFocus={() => setEngaged(true)} onBlur={() => setEngaged(false)}>
+      <span className="service-media">
+        {visibleImages.map((src, position) => (
+          <span className={`service-slide ${position === current ? "is-current" : slide > 0 && position === previous ? "is-previous" : ""}`} key={src}>
+            <img src={src} alt={position === 0 ? `Pose de cils ${service.name} par RANIA` : ""} loading={position === 0 ? "lazy" : undefined} />
+          </span>
+        ))}
+      </span>
+      <span className="service-body"><span className="service-number">0{index + 1}</span><span className="service-name"><strong>{service.name}</strong><small>{service.note}</small></span><span className="service-price">{service.price}<small> FCFA</small></span></span>
+      {images.length > 1 && <span className="service-dots" aria-hidden="true">{images.map((src, position) => <i className={position === current ? "is-current" : ""} key={src} />)}</span>}
+      <ArrowUpRight className="service-arrow" size={18} />
+    </button>
+  );
+}
 
 export default function Home() {
   const [selectedService, setSelectedService] = useState(services[0].name);
@@ -91,7 +133,7 @@ export default function Home() {
 
       <section id="prestations" className="services-section">
         <div className="services-heading"><div className="section-index">03 <span /></div><p className="eyebrow">La grille tarifaire</p><h2>Choisissez<br /><em>votre signature.</em></h2><p className="heading-note">Tous les tarifs sont indiqués en FCFA.</p></div>
-        <div className="service-list">{services.map((service, index) => <button type="button" className={`service-row ${selectedService === service.name ? "is-selected" : ""}`} key={service.name} onClick={() => { setSelectedService(service.name); document.getElementById("reservation")?.scrollIntoView({ behavior: "smooth" }); }}><span className="service-media"><img src={service.image} alt={`Pose de cils ${service.name} par RANIA`} loading="lazy" /></span><span className="service-body"><span className="service-number">0{index + 1}</span><span className="service-name"><strong>{service.name}</strong><small>{service.note}</small></span><span className="service-price">{service.price}<small> FCFA</small></span></span><ArrowUpRight className="service-arrow" size={18} /></button>)}</div>
+        <div className="service-list">{services.map((service, index) => <ServiceCard key={service.name} service={service} index={index} selected={selectedService === service.name} onSelect={() => { setSelectedService(service.name); document.getElementById("reservation")?.scrollIntoView({ behavior: "smooth" }); }} />)}</div>
         <div className="service-image"><img src={detailImage} alt="Détail d’un œil avec extensions de cils" /><span>Le détail fait<br /><em>la différence.</em></span></div>
       </section>
 
