@@ -5,7 +5,7 @@ import { type Service, services, timeSlots, validateBooking } from "@shared/book
 
 const logo = "/images/rania-logo-octobre-rose.png";
 const logoLight = "/images/rania-logo-octobre-rose-clair.png";
-const heroImage = "/images/rania-hero.jpg";
+const heroImage = "/images/rania-hero-octobre-rose.jpg";
 const detailImage = "/images/rania-detail.jpg";
 
 type BookingConfirmation = { service: string; date: string; slot: string };
@@ -119,9 +119,7 @@ export default function Home() {
           <div className="hero-meta"><span>01 — RANIA</span><span>Abidjan · Côte d’Ivoire</span></div>
         </div>
         <div className="hero-visual">
-          <img src={heroImage} alt="Regard mis en valeur par une pose de cils RANIA" />
-          <div className="hero-visual-caption"><span>La beauté</span><strong>du regard</strong></div>
-          <div className="vertical-label">RANIA - La beauté du regard</div>
+          <img src={heroImage} alt="Octobre Belle & Libre, le mois où tu t’appartiens — RANIA, la beauté du regard" />
         </div>
       </section>
 
