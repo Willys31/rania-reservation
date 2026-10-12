@@ -1,7 +1,7 @@
 /* Octobre Rose — page éditoriale noir/blanc nacré, accents roses, composition asymétrique. */
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { ArrowUpRight, CalendarCheck, Clock3, MapPin, Phone, Sparkles } from "lucide-react";
-import { type Service, services, timeSlots, validateBooking } from "@shared/booking";
+import { ArrowUpRight, Banknote, CalendarCheck, Clock3, MapPin, Phone, Sparkles } from "lucide-react";
+import { DEPOSIT_AMOUNT, DEPOSIT_METHODS, DEPOSIT_PHONE, type Service, services, timeSlots, validateBooking } from "@shared/booking";
 
 const logo = "/images/rania-logo-octobre-rose.png";
 const logoLight = "/images/rania-logo-octobre-rose-clair.png";
@@ -136,7 +136,7 @@ export default function Home() {
       </section>
 
       <section id="reservation" className="booking-section">
-        <div className="booking-intro"><div className="section-index light-index">04 <span /></div><p className="eyebrow">Votre rendez-vous</p><h2>Réserver<br /><em>votre moment.</em></h2><p>Renseignez vos coordonnées et la prestation souhaitée. Votre créneau est inscrit immédiatement dans l’agenda de RANIA.</p><div className="booking-info"><div><Clock3 size={18} /><span>Lundi — Vendredi<br /><strong>09:00 — 12:00</strong><br /><strong>14:00 — 17:00</strong></span></div><div><MapPin size={18} /><span>Immeuble Vanda<br /><strong>Cocody 2 Plateaux Vallons - 3e Etage</strong></span></div></div></div>
+        <div className="booking-intro"><div className="section-index light-index">04 <span /></div><p className="eyebrow">Votre rendez-vous</p><h2>Réserver<br /><em>votre moment.</em></h2><p>Renseignez vos coordonnées et la prestation souhaitée. Votre créneau est inscrit immédiatement dans l’agenda de RANIA.</p><div className="booking-info"><div><Clock3 size={18} /><span>Lundi — Vendredi<br /><strong>09:00 — 11:00</strong><br /><strong>11:00 — 13:00</strong><br /><strong>14:00 — 16:00</strong></span></div><div><Banknote size={18} /><span>Acompte de <strong>{DEPOSIT_AMOUNT} FCFA</strong> pour confirmer<br />{DEPOSIT_METHODS} · <strong>{DEPOSIT_PHONE}</strong></span></div><div><MapPin size={18} /><span>Immeuble Vanda<br /><strong>Cocody 2 Plateaux Vallons - 3e Etage</strong></span></div></div></div>
         <form className="booking-form" onSubmit={handleSubmit}>
           <div className="form-heading"><span>FORMULAIRE DE RÉSERVATION</span><span>RANIA / 04</span></div>
           <label>Nom et prénoms<input required name="name" placeholder="Votre nom complet" /></label>
@@ -145,9 +145,20 @@ export default function Home() {
           <div className="form-grid"><label>Date souhaitée<input required name="appointmentDate" type="date" min={minDate} onChange={() => setFormError("")} /><small className="field-hint">Du lundi au vendredi</small></label><label>Créneau souhaité<select required name="appointmentTime" defaultValue="" onChange={() => setFormError("")}><option value="" disabled>Choisir un créneau</option>{timeSlots.map((slot) => <option key={slot.value} value={slot.value}>{slot.label}</option>)}</select></label></div>
           {formError && <p className="field-error" role="alert">{formError}</p>}
           <div className="selection-summary"><span>Votre sélection</span><strong>{selected.name}</strong><b>{selected.price} <small>FCFA</small></b></div>
+          <p className="deposit-note"><Banknote size={16} /><span>Votre rendez-vous est confirmé après un acompte de <strong>{DEPOSIT_AMOUNT} FCFA</strong>, à régler par {DEPOSIT_METHODS} au <strong>{DEPOSIT_PHONE}</strong>.</span></p>
+          <div className="booking-rules">
+            <p className="booking-rules-title">Conditions de rendez-vous</p>
+            <ul>
+              <li>L’acompte de {DEPOSIT_AMOUNT} FCFA est <strong>non remboursable</strong>.</li>
+              <li>Un retard <strong>sans avoir prévenu</strong> annule le rendez-vous : l’acompte est perdu.</li>
+              <li>Un imprévu ? Appelez le <strong>{DEPOSIT_PHONE}</strong> <strong>avant l’heure du rendez-vous</strong> : un léger retard peut être accepté, ou le rendez-vous reporté à un autre jour.</li>
+              <li>Passé l’heure du rendez-vous, <strong>ni report ni remboursement</strong>.</li>
+            </ul>
+          </div>
+          <label className="booking-consent"><input required type="checkbox" name="rulesAccepted" /><span>J’ai lu et j’accepte les conditions de rendez-vous et d’acompte.</span></label>
           <button className="button button-light submit-button" type="submit" disabled={status === "sending"}>{status === "sending" ? "Enregistrement…" : status === "success" ? <><CalendarCheck size={17} /> Rendez-vous enregistré</> : <>Confirmer ma demande <ArrowUpRight size={17} /></>}</button>
           <p className="form-footnote">Votre créneau est ajouté directement à l’agenda de RANIA. Vous serez rappelée au numéro indiqué pour confirmer les derniers détails.</p>
-          {status === "success" && <div className="success-message" role="status"><Sparkles size={16} /> {confirmation ? `C’est noté : ${confirmation.service} — ${confirmation.date}, ${confirmation.slot}.` : "Merci, votre rendez-vous est enregistré."}</div>}
+          {status === "success" && <div className="success-message" role="status"><Sparkles size={16} /> {confirmation ? `C’est noté : ${confirmation.service} — ${confirmation.date}, ${confirmation.slot}. Pensez à l’acompte de ${DEPOSIT_AMOUNT} FCFA au ${DEPOSIT_PHONE}.` : `Merci, votre rendez-vous est enregistré. Pensez à l’acompte de ${DEPOSIT_AMOUNT} FCFA au ${DEPOSIT_PHONE}.`}</div>}
         </form>
       </section>
 

@@ -18,13 +18,18 @@ export const services: Service[] = [
 export type TimeSlot = { value: string; label: string; start: string; end: string };
 
 export const timeSlots: TimeSlot[] = [
-  { value: "09:00 — 12:00", label: "Matin · 09:00 — 12:00", start: "09:00", end: "12:00" },
-  { value: "14:00 — 17:00", label: "Après-midi · 14:00 — 17:00", start: "14:00", end: "17:00" },
+  { value: "09:00 — 11:00", label: "Matin · 09:00 — 11:00", start: "09:00", end: "11:00" },
+  { value: "11:00 — 13:00", label: "Fin de matinée · 11:00 — 13:00", start: "11:00", end: "13:00" },
+  { value: "14:00 — 16:00", label: "Après-midi · 14:00 — 16:00", start: "14:00", end: "16:00" },
 ];
 
 /* Abidjan est à UTC+00:00 toute l'année : pas de passage heure d'été à gérer. */
 export const SALON_TIME_ZONE = "Africa/Abidjan";
 export const SALON_UTC_OFFSET = "+00:00";
+/* Acompte demandé pour confirmer le rendez-vous, réglé par mobile money au numéro du salon. */
+export const DEPOSIT_AMOUNT = "5 000";
+export const DEPOSIT_PHONE = "07 00 88 84 51";
+export const DEPOSIT_METHODS = "Wave ou Orange Money";
 export const SALON_ADDRESS = "Immeuble Vanda, Cocody 2 Plateaux Vallons — 3e étage, Abidjan, Côte d'Ivoire";
 
 export type BookingInput = {

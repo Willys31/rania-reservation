@@ -3,6 +3,9 @@
    pour les deux appels REST dont on a besoin. */
 import { createSign } from "node:crypto";
 import {
+  DEPOSIT_AMOUNT,
+  DEPOSIT_METHODS,
+  DEPOSIT_PHONE,
   SALON_ADDRESS,
   SALON_TIME_ZONE,
   formatReadableDate,
@@ -183,6 +186,7 @@ export default async function handler(req: MinimalRequest, res: MinimalResponse)
           `Prestation : ${service.name} (${service.note})`,
           `Tarif indicatif : ${service.price} FCFA`,
           `Créneau : ${slot.value}`,
+          `Acompte attendu : ${DEPOSIT_AMOUNT} FCFA (${DEPOSIT_METHODS} · ${DEPOSIT_PHONE})`,
           "",
           "Réservation enregistrée depuis le site RANIA.",
         ].join("\n"),
